@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "567487683137",
+    "project_id": "pages-and-pals",
+    "storage_bucket": "pages-and-pals.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567487683137:android:5988878f56264cd738c4c0",
+        "android_client_info": {
+          "package_name": "com.example.pages_and_pals"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDI_wtKdhu-pUw_2hGY9YL1BxJvR5ec6_8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
