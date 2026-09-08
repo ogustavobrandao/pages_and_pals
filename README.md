@@ -1,17 +1,20 @@
-# pages_and_pals
+# Pages&Pals
 
-A new Flutter project.
+Pages&Pals é um app de leitura social: uma estante digital onde você organiza os livros que já leu, está lendo e quer ler, e acompanha a leitura dos seus amigos.
 
-## Getting Started
+## 5.1. Descrição do projeto
 
-This project is a starting point for a Flutter application.
+**Objetivo principal do aplicativo**
+Oferecer uma estante de leitura digital com foco social, permitindo que o usuário organize seus livros, acompanhe metas de leitura e interaja com amigos leitores por meio de resenhas e comentários.
 
-A few resources to get you started if this is your first Flutter project:
+**Perfil do usuário**
+Leitores assíduos, que já têm o hábito de ler regularmente e querem organizar e acompanhar suas leituras, e leitores sociais, que gostam de compartilhar o que estão lendo, trocar recomendações e discutir livros com amigos.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+**Problema que o aplicativo pretende resolver**
+A falta de acompanhamento social da leitura: apps de leitura tendem a ser individuais e solitários, sem um jeito fácil e envolvente de acompanhar o que os amigos estão lendo e de conversar sobre isso.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+**Aplicativo utilizado como referência**
+[Skoob](https://www.skoob.com.br/), rede social de leitura brasileira com estantes, metas de leitura e resenhas.
+
+**Diferencial proposto pela equipe**
+Além de uma proposta visual mais simples e direta, o Pages&Pals introduz comentários em thread: é possível responder a um comentário com outro comentário, criando uma conversa aninhada em vez de uma lista plana de comentários — recurso que o Skoob não oferece.
