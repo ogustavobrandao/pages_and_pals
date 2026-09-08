@@ -18,3 +18,19 @@ A falta de acompanhamento social da leitura: apps de leitura tendem a ser indivi
 
 **Diferencial proposto pela equipe**
 Além de uma proposta visual mais simples e direta, o Pages&Pals introduz comentários em thread: é possível responder a um comentário com outro comentário, criando uma conversa aninhada em vez de uma lista plana de comentários — recurso que o Skoob não oferece.
+
+## Como rodar
+
+O app usa a Google Books API para a busca de livros. `env.json` não vai pro Git (contém a chave real) — copie `env.example.json` pra `env.json` e coloque sua chave lá:
+
+```
+cp env.example.json env.json
+```
+
+Depois rode com:
+
+```
+flutter run --dart-define-from-file=env.json
+```
+
+Sem essa flag o app ainda funciona, mas a busca de livros fica sujeita a uma cota bem menor (pode dar erro 429 com poucas buscas). Peça a chave pra equipe por fora do Git (chat/e-mail) em vez de comitar ela.

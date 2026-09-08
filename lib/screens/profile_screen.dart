@@ -7,6 +7,7 @@ import '../services/storage_service.dart';
 import '../services/user_repository.dart';
 import '../widgets/avatar.dart';
 import '../widgets/primary_button.dart';
+import 'book_search_screen.dart';
 import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -157,6 +158,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        SecondaryButton(
+                          label: 'Buscar livros',
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const BookSearchScreen()),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
                         SecondaryButton(label: 'Sair', onPressed: _signOut, color: AppColors.danger, borderColor: AppColors.dangerBorder),
                         const SizedBox(height: 12),
                         SizedBox(
