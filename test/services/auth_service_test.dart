@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pages_and_pals/services/auth_service.dart';
+import 'package:pages_and_pals/core/services/auth_service.dart';
 
 void main() {
   group('authErrorMessage', () {

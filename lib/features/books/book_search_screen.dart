@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../app_theme.dart';
-import '../models/book.dart';
-import '../services/google_books_service.dart';
-import '../widgets/error_state.dart';
+import 'book.dart';
+import '../../core/services/google_books_service.dart';
+import '../../core/design_system/widgets/error_state.dart';
 import 'book_details_screen.dart';
 
 class BookSearchScreen extends StatefulWidget {
@@ -13,13 +12,19 @@ class BookSearchScreen extends StatefulWidget {
   State<BookSearchScreen> createState() => _BookSearchScreenState();
 }
 
-enum _SearchStatus { idle, loading, error, results }
+enum _SearchStatus {
+  idle,
+  loading,
+  error,
+  results,
+}
 
 class _BookSearchScreenState extends State<BookSearchScreen> {
   final _controller = TextEditingController();
   final _service = GoogleBooksService();
 
   _SearchStatus _status = _SearchStatus.idle;
+
   String _errorMessage = '';
   List<Book> _results = const [];
   String _lastQuery = '';
@@ -32,6 +37,7 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
 
   Future<void> _search() async {
     final query = _controller.text.trim();
+
     if (query.isEmpty) return;
 
     setState(() {
@@ -41,13 +47,16 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
 
     try {
       final results = await _service.searchBooks(query);
+
       if (!mounted) return;
+
       setState(() {
         _results = results;
         _status = _SearchStatus.results;
       });
     } catch (e) {
       if (!mounted) return;
+
       setState(() {
         _errorMessage = e.toString().replaceFirst('Exception: ', '');
         _status = _SearchStatus.error;
@@ -57,8 +66,10 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -76,63 +87,58 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
                         child: Container(
                           width: 38,
                           height: 38,
-                          decoration:
-                              BoxDecoration(color: AppColors.chip, borderRadius: BorderRadius.circular(12)),
                           alignment: Alignment.center,
-                          child: const Icon(Icons.chevron_left, color: AppColors.accent),
+                          decoration: BoxDecoration(
+                            color: colors.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.chevron_left,
+                            color: colors.primary,
+                          ),
                         ),
                       ),
+
                       const SizedBox(width: 14),
-                      Text('Buscar livros', style: appSerif(fontSize: 24)),
+
+                      Text(
+                        'Buscar livros',
+                        style: theme.textTheme.headlineSmall,
+                      ),
                     ],
                   ),
+
                   const SizedBox(height: 18),
+
                   Row(
                     children: [
                       Expanded(
-                        child: Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: AppColors.border, width: 1.5),
-                            borderRadius: BorderRadius.circular(14),
-                            color: AppColors.surface,
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 14),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.search, size: 20, color: AppColors.accent),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: TextField(
-                                  controller: _controller,
-                                  textInputAction: TextInputAction.search,
-                                  onSubmitted: (_) => _search(),
-                                  style: const TextStyle(fontSize: 15, color: AppColors.textDark),
-                                  decoration: const InputDecoration(
-                                    hintText: 'Buscar por título ou autor',
-                                    hintStyle: TextStyle(color: AppColors.placeholder),
-                                    border: InputBorder.none,
-                                    isDense: true,
-                                  ),
-                                ),
-                              ),
-                            ],
+                        child: TextField(
+                          controller: _controller,
+                          textInputAction: TextInputAction.search,
+                          onSubmitted: (_) => _search(),
+                          style: theme.textTheme.bodyMedium,
+                          decoration: const InputDecoration(
+                            hintText: 'Buscar por título ou autor',
+                            prefixIcon: Icon(Icons.search),
                           ),
                         ),
                       ),
+
                       const SizedBox(width: 10),
+
                       SizedBox(
                         width: 50,
                         height: 50,
-                        child: ElevatedButton(
+                        child: FilledButton.tonal(
                           onPressed: _search,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.chip,
-                            elevation: 0,
+                          style: FilledButton.styleFrom(
                             padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
-                          child: const Icon(Icons.search, color: AppColors.accent),
+                          child: const Icon(Icons.search),
                         ),
                       ),
                     ],
@@ -140,31 +146,48 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
                 ],
               ),
             ),
+
             const SizedBox(height: 8),
-            Expanded(child: _buildBody()),
+
+            Expanded(
+              child: _buildBody(context),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     switch (_status) {
       case _SearchStatus.idle:
-        return const Center(
+        return Center(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               'Digite um título ou autor para buscar.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textMuted),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ),
         );
+
       case _SearchStatus.loading:
-        return const Center(child: CircularProgressIndicator(color: AppColors.accent));
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+
       case _SearchStatus.error:
-        return ErrorState(message: _errorMessage, onRetry: _search);
+        return ErrorState(
+          message: _errorMessage,
+          onRetry: _search,
+        );
+
       case _SearchStatus.results:
         if (_results.isEmpty) {
           return Center(
@@ -173,38 +196,58 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
               child: Text(
                 'Nenhum resultado para "$_lastQuery".',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textMuted),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
               ),
             ),
           );
         }
+
         return ListView.separated(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           itemCount: _results.length,
           separatorBuilder: (_, _) => const SizedBox(height: 12),
-          itemBuilder: (context, index) => _BookResultCard(book: _results[index]),
+          itemBuilder: (context, index) {
+            return _BookResultCard(
+              book: _results[index],
+            );
+          },
         );
     }
   }
 }
 
 class _BookResultCard extends StatelessWidget {
-  const _BookResultCard({required this.book});
+  const _BookResultCard({
+    required this.book,
+  });
 
   final Book book;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return InkWell(
       borderRadius: BorderRadius.circular(18),
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => BookDetailsScreen(bookId: book.id)),
-      ),
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => BookDetailsScreen(
+              bookId: book.id,
+            ),
+          ),
+        );
+      },
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          border: Border.all(color: AppColors.borderMuted),
+          color: colors.surface,
+          border: Border.all(
+            color: colors.outlineVariant,
+          ),
           borderRadius: BorderRadius.circular(18),
         ),
         child: Row(
@@ -219,12 +262,16 @@ class _BookResultCard extends StatelessWidget {
                     ? Image.network(
                         book.thumbnailUrl!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => _coverPlaceholder(),
+                        errorBuilder: (_, _, _) {
+                          return _coverPlaceholder(context);
+                        },
                       )
-                    : _coverPlaceholder(),
+                    : _coverPlaceholder(context),
               ),
             ),
+
             const SizedBox(width: 14),
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,20 +281,28 @@ class _BookResultCard extends StatelessWidget {
                     book.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: appSerif(fontSize: 16, color: AppColors.textDark),
+                    style: theme.textTheme.titleMedium,
                   ),
+
                   const SizedBox(height: 4),
+
                   Text(
                     book.authorsLabel,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
                   ),
+
                   if (book.publishedYear != null) ...[
                     const SizedBox(height: 4),
+
                     Text(
                       book.publishedYear!,
-                      style: const TextStyle(fontSize: 11, color: AppColors.placeholder),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ],
@@ -259,7 +314,16 @@ class _BookResultCard extends StatelessWidget {
     );
   }
 
-  Widget _coverPlaceholder() {
-    return Container(color: AppColors.borderMuted);
+  Widget _coverPlaceholder(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Container(
+      color: colors.surfaceContainerHighest,
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.menu_book_rounded,
+        color: colors.onSurfaceVariant,
+      ),
+    );
   }
 }

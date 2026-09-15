@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:pages_and_pals/widgets/app_text_field.dart';
-import 'package:pages_and_pals/widgets/primary_button.dart';
+import 'package:pages_and_pals/core/design_system/widgets/app_text_field.dart';
+import 'package:pages_and_pals/core/design_system/widgets/primary_button.dart';
 
 void main() {
   testWidgets('AppTextField renders its label and hint', (WidgetTester tester) async {

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../app_theme.dart';
-import '../models/book.dart';
-import '../services/google_books_service.dart';
-import '../widgets/error_state.dart';
+import 'book.dart';
+import '../../core/services/google_books_service.dart';
+import '../../core/design_system/widgets/error_state.dart';
 
 class BookDetailsScreen extends StatefulWidget {
-  const BookDetailsScreen({super.key, required this.bookId});
+  const BookDetailsScreen({
+    super.key,
+    required this.bookId,
+  });
 
   final String bookId;
 
@@ -22,6 +24,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
   @override
   void initState() {
     super.initState();
+
     _future = _service.getBookById(widget.bookId);
   }
 
@@ -33,40 +36,59 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 22, 24, 0),
-              child: InkWell(
-                onTap: () => Navigator.of(context).pop(),
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(color: AppColors.chip, borderRadius: BorderRadius.circular(12)),
-                  alignment: Alignment.center,
-                  child: const Icon(Icons.chevron_left, color: AppColors.accent),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: InkWell(
+                  onTap: () => Navigator.of(context).pop(),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    width: 38,
+                    height: 38,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.chevron_left,
+                      color: colors.primary,
+                    ),
+                  ),
                 ),
               ),
             ),
+
             Expanded(
               child: FutureBuilder<Book>(
                 future: _future,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState != ConnectionState.done) {
-                    return const Center(child: CircularProgressIndicator(color: AppColors.accent));
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
                   }
+
                   if (snapshot.hasError) {
                     return ErrorState(
-                      message: snapshot.error.toString().replaceFirst('Exception: ', ''),
+                      message: snapshot.error
+                          .toString()
+                          .replaceFirst('Exception: ', ''),
                       onRetry: _retry,
                     );
                   }
-                  return _BookDetailsBody(book: snapshot.data!);
+
+                  return _BookDetailsBody(
+                    book: snapshot.data!,
+                  );
                 },
               ),
             ),
@@ -78,12 +100,17 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
 }
 
 class _BookDetailsBody extends StatelessWidget {
-  const _BookDetailsBody({required this.book});
+  const _BookDetailsBody({
+    required this.book,
+  });
 
   final Book book;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 18, 24, 32),
       child: Column(
@@ -101,34 +128,62 @@ class _BookDetailsBody extends StatelessWidget {
                       ? Image.network(
                           book.thumbnailUrl!,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => Container(color: AppColors.borderMuted),
+                          errorBuilder: (_, _, _) {
+                            return _coverPlaceholder(context);
+                          },
                         )
-                      : Container(color: AppColors.borderMuted),
+                      : _coverPlaceholder(context),
                 ),
               ),
+
               const SizedBox(width: 18),
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(book.title, style: appSerif(fontSize: 22, color: AppColors.textDark)),
+                    Text(
+                      book.title,
+                      style: theme.textTheme.headlineSmall,
+                    ),
+
                     const SizedBox(height: 8),
-                    Text(book.authorsLabel, style: const TextStyle(fontSize: 14, color: AppColors.textMuted)),
+
+                    Text(
+                      book.authorsLabel,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+
                     if (book.averageRating != null) ...[
                       const SizedBox(height: 10),
+
                       Row(
                         children: [
-                          Icon(Icons.star_rounded, size: 18, color: AppColors.accentStrong),
+                          Icon(
+                            Icons.star_rounded,
+                            size: 18,
+                            color: colors.primary,
+                          ),
+
                           const SizedBox(width: 4),
+
                           Text(
                             book.averageRating!.toStringAsFixed(1),
-                            style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
                           ),
+
                           if (book.ratingsCount != null) ...[
                             const SizedBox(width: 6),
+
                             Text(
                               '(${book.ratingsCount} avaliações)',
-                              style: const TextStyle(fontSize: 12, color: AppColors.textFaint),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
                             ),
                           ],
                         ],
@@ -139,16 +194,40 @@ class _BookDetailsBody extends StatelessWidget {
               ),
             ],
           ),
+
           const SizedBox(height: 26),
-          Text('Sinopse', style: appSerif(fontSize: 18)),
-          const SizedBox(height: 8),
+
           Text(
-            (book.description == null || book.description!.trim().isEmpty)
+            'Sinopse',
+            style: theme.textTheme.titleLarge,
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            (book.description == null ||
+                    book.description!.trim().isEmpty)
                 ? 'Sem sinopse disponível para este livro.'
                 : book.description!,
-            style: const TextStyle(fontSize: 14.5, height: 1.55, color: AppColors.textMedium),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant,
+              height: 1.55,
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _coverPlaceholder(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Container(
+      color: colors.surfaceContainerHighest,
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.menu_book_rounded,
+        color: colors.onSurfaceVariant,
       ),
     );
   }

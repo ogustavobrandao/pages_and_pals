@@ -1,26 +1,23 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'app_theme.dart';
-import 'firebase_options.dart';
-import 'screens/auth_gate.dart';
+import 'package:pages_and_pals/app/app.dart';
+import 'package:pages_and_pals/core/design_system/theme_controller.dart';
+import 'package:pages_and_pals/firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
-}
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final themeController = ThemeController();
+  await themeController.load();
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Pages&Pals',
-      debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
-      home: const AuthGate(),
-    );
-  }
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(
+    App(
+      themeController: themeController,
+    ),
+  );
 }

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
-import '../models/book.dart';
+import '../../features/books/book.dart';
 
 class GoogleBooksService {
   GoogleBooksService({http.Client? client}) : _client = client ?? http.Client();
